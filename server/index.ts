@@ -1,9 +1,13 @@
 import express from "express";
 import { chats } from "./data/data";
 import dotEnv from "dotenv";
+import connectDB from "./config/db";
+import colors from "colors";
 
 // 加载 .env 文件
 dotEnv.config();
+
+connectDB();
 
 const app = express();
 
@@ -23,4 +27,6 @@ app.get("/api/chats/:id", (req, res) => {
 });
 
 const port = process.env.PORT || 8001;
-app.listen(port, () => console.log("Server is listen at port " + port));
+app.listen(port, () =>
+  console.log(colors.yellow.bold(`Server is listen at port ${port}`))
+);
