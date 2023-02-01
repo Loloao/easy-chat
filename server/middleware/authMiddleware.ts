@@ -1,23 +1,40 @@
-import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import User from "../models/userModel";
+import asyncHandler from "express-async-handler";
+import { Request } from "express";
 
-const notFound = (req: Request, res: Response, next: NextFunction) => {
-  const error = new Error(`Not Found - ${req.originalUrl}`);
-  res.status(404);
-  next(error);
-};
+export interface TokenRequest {
+  user: any;
+}
 
-const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
-    message: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
-  });
-};
+const protect = asyncHandler(
+  async (req: Request<any, any, TokenRequest>, res, next) => {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      try {
+        token = req.headers.authorization.split(" ")[1];
 
-export { notFound, errorHandler };
+        const decoded = jwt.verify(token, process.env.JWT_TOKEN!);
+
+        req.body.user = await User.findById(
+          (decoded as jwt.JwtPayload).id
+        ).select("-password");
+
+        next();
+      } catch (error) {
+        res.status(401);
+        throw new Error("无法验证用户，请登录");
+      }
+    }
+
+    if (!token) {
+      res.status(401);
+      throw new Error("用户 token 验证失败");
+    }
+  }
+);
+
+export { protect };

@@ -4,7 +4,7 @@ import dotEnv from "dotenv";
 import connectDB from "./config/db";
 import colors from "colors";
 import userRouters from "./routes/userRoutes";
-import { notFound, errorHandler } from "./middleware/authMiddleware";
+import { notFound, errorHandler } from "./middleware/errorMiddleware";
 
 // 加载 .env 文件
 dotEnv.config();
