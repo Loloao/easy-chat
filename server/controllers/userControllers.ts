@@ -74,7 +74,6 @@ const allUsers = asyncHandler(
       _id: { $ne: req.body.user._id },
     });
     res.send(users);
-    console.log(keyword);
   }
 );
 

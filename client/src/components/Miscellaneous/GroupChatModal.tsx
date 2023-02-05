@@ -42,10 +42,9 @@ const GroupChatModal = ({ children }: Props) => {
       setLoading(true);
 
       const { data } = await setTokenFetch(user.token).get(
-        `/api/user?search=${search}`
+        `/api/user?search=${queryStr}`
       );
 
-      setLoading(false);
       setSearchRes(data);
     } catch (error) {
       toast({
@@ -55,6 +54,8 @@ const GroupChatModal = ({ children }: Props) => {
         isClosable: true,
         position: "bottom-left",
       });
+    } finally {
+      setLoading(false);
     }
   });
 
@@ -127,7 +128,7 @@ const GroupChatModal = ({ children }: Props) => {
             display="flex"
             justifyContent="center"
           >
-            创建群
+            创建聊天组
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody display="flex" flexDir="column" alignItems="center">
@@ -148,7 +149,7 @@ const GroupChatModal = ({ children }: Props) => {
             <Box w="100%" display="flex" flexWrap="wrap">
               {selectedUsers.map((v) => (
                 <UserBadgeItem
-                  key={user._id}
+                  key={v._id}
                   user={v}
                   handleFunction={() => handleDelete(v)}
                 />
@@ -161,7 +162,7 @@ const GroupChatModal = ({ children }: Props) => {
                 ?.slice(0, 4)
                 .map((v) => (
                   <UserListItem
-                    key={user._id}
+                    key={v._id}
                     handleFunction={() => handleGroup(v)}
                     user={v}
                   />
