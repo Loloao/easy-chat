@@ -4,6 +4,7 @@ import connectDB from "./config/db";
 import colors from "colors";
 import userRouters from "./routes/userRoutes";
 import chatRouters from "./routes/chatRoutes";
+import messageRouters from "./routes/messageRoutes";
 import { notFound, errorHandler } from "./middleware/errorMiddleware";
 
 // 加载 .env 文件
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/api/user", userRouters);
 app.use("/api/chat", chatRouters);
+app.use("/api/message", messageRouters);
 
 app.use(notFound);
 app.use(errorHandler);
