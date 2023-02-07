@@ -12,7 +12,6 @@ interface IUserMethods {
   matchPassword(enteredPassword: string): Promise<Boolean>;
 }
 
-// Create a new Model type that knows about IUserMethods...
 type UserModel = Model<IUser, {}, IUserMethods>;
 
 const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
