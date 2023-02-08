@@ -6,21 +6,76 @@ import {
   Input,
   Spinner,
   Text,
+  Toast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, {
+  ChangeEvent,
+  KeyboardEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import { ChatState } from "../context/chatProvider";
 import ProfileModal from "./Miscellaneous/ProfileModal";
 import { defaultChat } from "../context/chatProvider";
-import { getSender, getSenderFull } from "../tools";
+import { getSender, getSenderFull, setTokenFetch } from "../tools";
 import UpdateGroupChatModal from "./Miscellaneous/UpdateGroupChatModal";
+import { Message, SERVER_ADDRESS } from "../constants";
+import io from "socket.io-client";
+import axios from "axios";
 
 interface Props {
   fetchAgain: boolean;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+let socket, selectedChatCompare;
+
 const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
+  const [message, setMessage] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [newMessage, setNewMessage] = useState("");
+
   const { user, selectedChat, setSelectedChat } = ChatState();
+
+  const sendMessage: KeyboardEventHandler<HTMLDivElement> = async (e) => {
+    if (e.key === "Enter" && newMessage) {
+      try {
+        setNewMessage("");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+
+        const { data } = await axios.post(
+          "/api/message",
+          {
+            content: newMessage,
+            chatId: selectedChat._id,
+          },
+          config
+        );
+
+        setMessage([...message, data]);
+      } catch (error) {
+        Toast({
+          title: "发送聊天信息失败!",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
+    }
+  };
+  const typingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+  };
+
+  useEffect(() => {
+    socket = io(SERVER_ADDRESS);
+  }, []);
   return (
     <>
       {selectedChat._id ? (
@@ -73,7 +128,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
             borderRadius="lg"
             overflowY="hidden"
           >
-            {/* {loading ? (
+            {loading ? (
               <Spinner
                 size="xl"
                 w={20}
@@ -83,7 +138,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages} />
+                {/* <ScrollableChat messages={messages} /> */}
               </div>
             )}
 
@@ -93,7 +148,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
               isRequired
               mt={3}
             >
-              {istyping ? (
+              {/* {istyping ? (
                 <div>
                   <Lottie
                     options={defaultOptions}
@@ -104,7 +159,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
                 </div>
               ) : (
                 <></>
-              )}
+              )} */}
               <Input
                 variant="filled"
                 bg="#E0E0E0"
@@ -112,7 +167,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
                 value={newMessage}
                 onChange={typingHandler}
               />
-            </FormControl> */}
+            </FormControl>
           </Box>
         </>
       ) : (
