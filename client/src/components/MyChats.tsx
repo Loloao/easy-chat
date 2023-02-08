@@ -7,9 +7,10 @@ import {
   setTokenFetch,
   getSender,
 } from "../tools/index";
-import { User } from "../types";
+import { User } from "../constants";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./Miscellaneous/GroupChatModal";
+import { getErrorRequestOptions } from "./Toasts";
 
 interface Props {
   fetchAgain: boolean;
@@ -18,7 +19,6 @@ interface Props {
 const MyChats = ({ fetchAgain }: Props) => {
   const [loggedUser, setLoggedUser] = useState<User>(defaultUser);
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
-
   const toast = useToast();
 
   useEffect(() => {
@@ -34,13 +34,7 @@ const MyChats = ({ fetchAgain }: Props) => {
       const { data } = await setTokenFetch(user.token).get("/api/chat");
       setChats!(data);
     } catch (error) {
-      toast({
-        title: "获取会话列表失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
+      toast(getErrorRequestOptions("获取会话列表失败"));
     }
   };
   return (

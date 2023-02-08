@@ -7,6 +7,7 @@ import {
   Spinner,
   Text,
   Toast,
+  useToast,
 } from "@chakra-ui/react";
 import React, {
   ChangeEvent,
@@ -14,14 +15,18 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { ChatState } from "../context/chatProvider";
-import ProfileModal from "./Miscellaneous/ProfileModal";
-import { defaultChat } from "../context/chatProvider";
-import { getSender, getSenderFull, setTokenFetch } from "../tools";
-import UpdateGroupChatModal from "./Miscellaneous/UpdateGroupChatModal";
-import { Message, SERVER_ADDRESS } from "../constants";
 import io from "socket.io-client";
 import axios from "axios";
+
+import { ChatState } from "../../context/chatProvider";
+import ProfileModal from "../Miscellaneous/ProfileModal";
+import { defaultChat } from "../../context/chatProvider";
+import { getSender, getSenderFull, setTokenFetch } from "../../tools";
+import UpdateGroupChatModal from "../Miscellaneous/UpdateGroupChatModal";
+import { Message, SERVER_ADDRESS } from "../../constants";
+import { getErrorRequestOptions } from "../Toasts";
+import ScrollableChat from "../ScrollableChat";
+import "./styles.css";
 
 interface Props {
   fetchAgain: boolean;
@@ -31,11 +36,29 @@ interface Props {
 let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
-  const [message, setMessage] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
 
   const { user, selectedChat, setSelectedChat } = ChatState();
+  const toast = useToast();
+
+  const fetchMessages = async () => {
+    if (!selectedChat._id) return;
+
+    try {
+      setLoading(true);
+      const { data } = await setTokenFetch(user.token).get(
+        `/api/message/${selectedChat._id}`
+      );
+
+      setMessages(data);
+    } catch (error) {
+      toast(getErrorRequestOptions("获取聊天记录失败!"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const sendMessage: KeyboardEventHandler<HTMLDivElement> = async (e) => {
     if (e.key === "Enter" && newMessage) {
@@ -57,15 +80,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
           config
         );
 
-        setMessage([...message, data]);
+        setMessages([...messages, data]);
       } catch (error) {
-        Toast({
-          title: "发送聊天信息失败!",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        toast(getErrorRequestOptions("发送聊天信息失败!"));
       }
     }
   };
@@ -76,6 +93,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
   useEffect(() => {
     socket = io(SERVER_ADDRESS);
   }, []);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [selectedChat]);
   return (
     <>
       {selectedChat._id ? (
@@ -109,7 +130,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
                 <>
                   {selectedChat.chatName.toUpperCase()}
                   <UpdateGroupChatModal
-                    // fetchMessages={fetchMessages}
+                    fetchMessages={fetchMessages}
                     fetchAgain={fetchAgain}
                     setFetchAgain={setFetchAgain}
                   />
@@ -138,7 +159,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
               />
             ) : (
               <div className="messages">
-                {/* <ScrollableChat messages={messages} /> */}
+                <ScrollableChat messages={messages} />
               </div>
             )}
 

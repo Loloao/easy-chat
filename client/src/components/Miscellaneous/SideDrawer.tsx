@@ -27,8 +27,10 @@ import axios from "axios";
 import { ChatState } from "../../context/chatProvider";
 import ProfileModal from "./ProfileModal";
 import ChatLoading from "../ChatLoading";
-import { User } from "../../types";
+import { User } from "../../constants";
 import UserListItem from "../UserAvatar/UserListItem";
+import { getErrorRequestOptions } from "../Toasts";
+import { setTokenFetch } from "../../tools";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -36,6 +38,7 @@ const SideDrawer = () => {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   const history = useHistory();
+  const toast = useToast();
 
   const { user, setSelectedChat, chats, setChats } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,8 +47,6 @@ const SideDrawer = () => {
     localStorage.removeItem("userInfo");
     history.push("/");
   };
-
-  const toast = useToast();
 
   const handleSearch = async () => {
     if (!search) {
@@ -61,23 +62,13 @@ const SideDrawer = () => {
 
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await setTokenFetch(user.token).get(
+        `/api/user?search=${search}`
+      );
 
       setSearchRes(data);
     } catch (error) {
-      toast({
-        title: "搜索出错",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
+      toast(getErrorRequestOptions("搜索用户失败!"));
     } finally {
       setLoading(false);
     }
@@ -97,16 +88,9 @@ const SideDrawer = () => {
 
       if (!chats.find((v) => v._id === data._id)) setChats!([data, ...chats]);
       setSelectedChat!(data);
-      setLoadingChat(false);
       onClose();
     } catch (error) {
-      toast({
-        title: "获取会话失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
+      toast(getErrorRequestOptions("获取会话失败!"));
     } finally {
       setLoading(false);
     }

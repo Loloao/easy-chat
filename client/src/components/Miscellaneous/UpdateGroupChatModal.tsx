@@ -18,17 +18,23 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 import { ChatState, defaultChat } from "../../context/chatProvider";
-import { User } from "../../types";
+import { User } from "../../constants";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import { debounce, setTokenFetch } from "../../tools";
 import UserListItem from "../UserAvatar/UserListItem";
+import { getErrorRequestOptions } from "../Toasts";
 
 interface Props {
   fetchAgain: boolean;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchMessages: () => void;
 }
 
-const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }: Props) => {
+const UpdateGroupChatModal = ({
+  fetchAgain,
+  setFetchAgain,
+  fetchMessages,
+}: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupChatName, setGroupChatName] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -48,7 +54,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }: Props) => {
     ) {
       toast({
         title: "只有管理员才能添加用户",
-        status: "error",
+        status: "warning",
         duration: 5000,
         isClosable: true,
         position: "bottom",
@@ -71,13 +77,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }: Props) => {
         : setSelectedChat!(data);
       setFetchAgain(!fetchAgain);
     } catch (error) {
-      toast({
-        title: "聊天组删除用户失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast(getErrorRequestOptions("聊天组删除用户失败"));
     } finally {
       setLoading(false);
     }
@@ -96,13 +96,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }: Props) => {
       setSelectedChat!(data);
       setFetchAgain(!fetchAgain);
     } catch (error) {
-      toast({
-        title: "修改组名错误",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast(getErrorRequestOptions("修改组名错误!"));
     } finally {
       setRenameLoading(false);
     }
@@ -120,15 +114,10 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }: Props) => {
       );
 
       setLoading(false);
+      fetchMessages();
       setSearchRes(data);
     } catch (error) {
-      toast({
-        title: "搜索用户失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
+      toast(getErrorRequestOptions("搜索用户失败!"));
     }
   });
 
@@ -167,13 +156,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }: Props) => {
       setSelectedChat!(data);
       setFetchAgain(!fetchAgain);
     } catch (error) {
-      toast({
-        title: "添加用户失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast(getErrorRequestOptions("添加用户失败!"));
     } finally {
       setLoading(false);
     }

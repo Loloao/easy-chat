@@ -7,6 +7,7 @@ export interface User {
 }
 
 export interface Message {
+  _id: string;
   sender: User;
   content: string;
 }

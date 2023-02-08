@@ -16,9 +16,10 @@ import {
 import React, { useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import { setTokenFetch, debounce } from "../../tools";
-import { User } from "../../types";
+import { User } from "../../constants";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import UserListItem from "../UserAvatar/UserListItem";
+import { getErrorRequestOptions } from "../Toasts";
 
 interface Props {
   children: React.ReactNode;
@@ -47,13 +48,7 @@ const GroupChatModal = ({ children }: Props) => {
 
       setSearchRes(data);
     } catch (error) {
-      toast({
-        title: "搜索用户失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
+      toast(getErrorRequestOptions("搜索用户失败!"));
     } finally {
       setLoading(false);
     }
@@ -105,13 +100,7 @@ const GroupChatModal = ({ children }: Props) => {
         position: "bottom",
       });
     } catch (error) {
-      toast({
-        title: "创建会话失败",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast(getErrorRequestOptions("创建会话失败!"));
     }
   };
 
