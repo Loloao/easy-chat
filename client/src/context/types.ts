@@ -1,4 +1,4 @@
-import { User, Chat } from "../types";
+import { User, Chat } from "../constants";
 
 export interface ChatContextObj {
   user: User;

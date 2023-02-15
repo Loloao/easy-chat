@@ -16,6 +16,7 @@ import React, {
   useState,
 } from "react";
 import io from "socket.io-client";
+import { Socket } from "socket.io-client";
 import axios from "axios";
 
 import { ChatState } from "../../context/chatProvider";
@@ -33,12 +34,13 @@ interface Props {
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-let socket, selectedChatCompare;
+let socket: Socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
 
   const { user, selectedChat, setSelectedChat } = ChatState();
   const toast = useToast();
@@ -53,6 +55,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
       );
 
       setMessages(data);
+      socket.emit("join chat");
     } catch (error) {
       toast(getErrorRequestOptions("获取聊天记录失败!"));
     } finally {
@@ -86,13 +89,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
       }
     }
   };
-  const typingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewMessage(e.target.value);
-  };
 
   useEffect(() => {
     socket = io(SERVER_ADDRESS);
+    socket.emit("setup", user);
+    socket.on("connection", () => {
+      setSocketConnected(true);
+    });
   }, []);
+
+  const typingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+  };
 
   useEffect(() => {
     fetchMessages();
