@@ -27,6 +27,7 @@ import UpdateGroupChatModal from "../Miscellaneous/UpdateGroupChatModal";
 import { Message, SERVER_ADDRESS } from "../../constants";
 import { getErrorRequestOptions } from "../Toasts";
 import ScrollableChat from "../ScrollableChat";
+import { SOCKET_EVENT } from "@shared/enums";
 import "./styles.css";
 
 interface Props {
@@ -55,7 +56,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
       );
 
       setMessages(data);
-      socket.emit("join chat");
+      socket.emit(SOCKET_EVENT.JOIN_CHAT);
     } catch (error) {
       toast(getErrorRequestOptions("获取聊天记录失败!"));
     } finally {
@@ -92,8 +93,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
 
   useEffect(() => {
     socket = io(SERVER_ADDRESS);
-    socket.emit("setup", user);
-    socket.on("connection", () => {
+    socket.emit(SOCKET_EVENT.SET_UP, user);
+    socket.on(SOCKET_EVENT.CONNECTION, () => {
       setSocketConnected(true);
     });
   }, []);

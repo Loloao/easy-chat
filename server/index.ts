@@ -7,7 +7,7 @@ import chatRouters from "./routes/chatRoutes";
 import messageRouters from "./routes/messageRoutes";
 import { notFound, errorHandler } from "./middleware/errorMiddleware";
 import { Server } from "socket.io";
-import {} from "../shared/index.ts";
+import { SOCKET_EVENT } from "@shared/enums";
 
 // 加载 .env 文件
 dotEnv.config();
@@ -37,13 +37,13 @@ const io = new Server(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  socket.on("setup", (userData) => {
+io.on(SOCKET_EVENT.CONNECTION, (socket) => {
+  socket.on(SOCKET_EVENT.SET_UP, (userData) => {
     socket.join(userData._id);
-    socket.emit("connected");
+    socket.emit(SOCKET_EVENT.CONNECTED);
   });
 
-  socket.on("join chat", (room) => {
+  socket.on(SOCKET_EVENT.JOIN_CHAT, (room) => {
     socket.join(room);
     console.log("User Joined Room: " + room);
   });
