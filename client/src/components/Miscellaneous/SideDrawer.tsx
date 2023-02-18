@@ -27,10 +27,11 @@ import axios from "axios";
 import { ChatState } from "../../context/chatProvider";
 import ProfileModal from "./ProfileModal";
 import ChatLoading from "../ChatLoading";
-import { User } from "../../constants";
+import { User } from "@shared/types";
 import UserListItem from "../UserAvatar/UserListItem";
 import { getErrorRequestOptions } from "../Toasts";
-import { setTokenFetch } from "../../tools";
+import { getSender, setTokenFetch } from "../../tools";
+import NotificationBadge, { Effect } from "react-notification-badge";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -40,7 +41,14 @@ const SideDrawer = () => {
   const history = useHistory();
   const toast = useToast();
 
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const logoutHandler = () => {
@@ -120,9 +128,30 @@ const SideDrawer = () => {
         <div>
           <Menu>
             <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon fontSize="2xl" m={1} />
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <MenuList pl={2}>
+              {!notification && "没有新的消息"}
+              {notification.map((v) => {
+                return (
+                  <MenuItem
+                    key={v._id}
+                    onClick={() => {
+                      setSelectedChat!(v.chat);
+                      setNotification!(notification.filter((v1) => v1 === v));
+                    }}
+                  >
+                    {v.chat.isGroupChat
+                      ? `来自${v.chat.chatName}的消息`
+                      : `来自${getSender(user, v.chat.users)}的消息`}
+                  </MenuItem>
+                );
+              })}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>

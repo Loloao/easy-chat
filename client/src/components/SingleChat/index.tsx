@@ -24,7 +24,8 @@ import ProfileModal from "../Miscellaneous/ProfileModal";
 import { defaultChat } from "../../context/chatProvider";
 import { getSender, getSenderFull, setTokenFetch } from "../../tools";
 import UpdateGroupChatModal from "../Miscellaneous/UpdateGroupChatModal";
-import { Message, SERVER_ADDRESS } from "../../constants";
+import { Chat, Message } from "@shared/types";
+import { SERVER_ADDRESS } from "../../constants";
 import { getErrorRequestOptions } from "../Toasts";
 import ScrollableChat from "../ScrollableChat";
 import { SOCKET_EVENT } from "@shared/enums";
@@ -35,16 +36,56 @@ interface Props {
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-let socket: Socket, selectedChatCompare;
+let socket: Socket, selectedChatCompare: Chat;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
+  const {
+    CONNECTED,
+    NEW_MESSAGE,
+    CONNECTION,
+    JOIN_CHAT,
+    SET_UP,
+    MESSAGE_RECEIVED,
+  } = SOCKET_EVENT;
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
 
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
   const toast = useToast();
+
+  useEffect(() => {
+    socket = io(SERVER_ADDRESS);
+    socket.emit(SET_UP, user);
+    socket.on(CONNECTION, () => {
+      setSocketConnected(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchMessages();
+
+    selectedChatCompare = selectedChat;
+  }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on(MESSAGE_RECEIVED, (newMessageReceived: Message) => {
+      console.log("trigger???", newMessageReceived);
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageReceived.chat._id
+      ) {
+        if (!notification.includes(newMessageReceived)) {
+          setNotification!([newMessageReceived, ...notification]);
+          setFetchAgain(!fetchAgain);
+        }
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });
+  });
 
   const fetchMessages = async () => {
     if (!selectedChat._id) return;
@@ -56,7 +97,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
       );
 
       setMessages(data);
-      socket.emit(SOCKET_EVENT.JOIN_CHAT);
+      socket.emit(JOIN_CHAT, selectedChat._id);
     } catch (error) {
       toast(getErrorRequestOptions("获取聊天记录失败!"));
     } finally {
@@ -68,22 +109,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
     if (e.key === "Enter" && newMessage) {
       try {
         setNewMessage("");
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
 
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat._id,
-          },
-          config
-        );
-
+        const { data } = await setTokenFetch(user.token).post("/api/message", {
+          content: newMessage,
+          chatId: selectedChat._id,
+        });
+        socket.emit(NEW_MESSAGE, data);
         setMessages([...messages, data]);
       } catch (error) {
         toast(getErrorRequestOptions("发送聊天信息失败!"));
@@ -91,21 +122,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
     }
   };
 
-  useEffect(() => {
-    socket = io(SERVER_ADDRESS);
-    socket.emit(SOCKET_EVENT.SET_UP, user);
-    socket.on(SOCKET_EVENT.CONNECTION, () => {
-      setSocketConnected(true);
-    });
-  }, []);
-
   const typingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
   };
 
-  useEffect(() => {
-    fetchMessages();
-  }, [selectedChat]);
   return (
     <>
       {selectedChat._id ? (

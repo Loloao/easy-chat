@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useHistory } from "react-router-dom";
 import { ChatContextObj } from "./types";
-import { User, Chat } from "../constants";
+import { User, Chat, Message } from "@shared/types";
 import { getLocalStorageUserInfo } from "../tools";
 
 export const defaultUser: User = {
@@ -28,6 +28,7 @@ const ChatContext = createContext<ChatContextObj>({
   user: defaultUser,
   selectedChat: defaultChat,
   chats: [],
+  notification: [],
 });
 const { Provider: ChatProvider } = ChatContext;
 
@@ -39,6 +40,7 @@ const ChatProviderWrapper = ({ children }: Props) => {
   const [user, setUser] = useState(defaultUser);
   const [selectedChat, setSelectedChat] = useState(defaultChat);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [notification, setNotification] = useState<Message[]>([]);
 
   const history = useHistory();
 
@@ -53,7 +55,16 @@ const ChatProviderWrapper = ({ children }: Props) => {
 
   return (
     <ChatProvider
-      value={{ user, setUser, selectedChat, setSelectedChat, chats, setChats }}
+      value={{
+        user,
+        setUser,
+        selectedChat,
+        setSelectedChat,
+        chats,
+        setChats,
+        notification,
+        setNotification,
+      }}
     >
       {children}
     </ChatProvider>

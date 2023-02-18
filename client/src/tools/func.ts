@@ -1,4 +1,4 @@
-import { Message, User } from "../constants";
+import { Message, User } from "@shared/types";
 
 export const getLocalStorageUserInfo = () => {
   const userInfoStr = localStorage.getItem("userInfo");
@@ -7,7 +7,6 @@ export const getLocalStorageUserInfo = () => {
 
 export const getSender = (loggedUser: User, users: User[]) => {
   const res = users[0]._id === loggedUser._id ? users[1].name : users[0].name;
-  console.log(res, "resssssssss");
   return res;
 };
 
@@ -24,8 +23,8 @@ export const isSameSender = (
   return (
     i < messages.length - 1 &&
     (messages[i + 1].sender._id !== m.sender._id ||
-      (messages[i + 1].sender._id === undefined &&
-        messages[i].sender._id !== userId))
+      messages[i + 1].sender._id === undefined) &&
+    messages[i].sender._id !== userId
   );
 };
 
@@ -70,7 +69,7 @@ export const isLastMessage = (
 };
 
 export const debounce = <T extends Function>(func: T, delay = 300) => {
-  let timer: number = 0;
+  let timer: NodeJS.Timeout;
   return function (...args: any) {
     if (timer) {
       clearTimeout(timer);

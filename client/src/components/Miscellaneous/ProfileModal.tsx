@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
-import { User } from "../../constants";
+import { User } from "@shared/types";
 
 interface Props {
   user: User;

@@ -1,4 +1,5 @@
-import { User, Chat } from "../constants";
+import { User, Chat, Message } from "@shared/types";
+import React from "react";
 
 export interface ChatContextObj {
   user: User;
@@ -7,4 +8,6 @@ export interface ChatContextObj {
   setSelectedChat?: React.Dispatch<React.SetStateAction<Chat>>;
   chats: Chat[];
   setChats?: React.Dispatch<React.SetStateAction<Chat[]>>;
+  notification: Message[];
+  setNotification?: React.Dispatch<React.SetStateAction<Message[]>>;
 }

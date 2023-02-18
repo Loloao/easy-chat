@@ -1,7 +1,7 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Badge } from "@chakra-ui/react";
 import React from "react";
-import { User } from "../../constants";
+import { User } from "@shared/types";
 
 interface Props {
   user: User;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Message } from "../constants";
+import { Message } from "@shared/types";
 import ScrollableFeed from "react-scrollable-feed";
 import {
   isLastMessage,
@@ -9,7 +9,6 @@ import {
 } from "../tools";
 import { ChatState } from "../context/chatProvider";
 import { Avatar, Tooltip } from "@chakra-ui/react";
-import { m } from "framer-motion";
 
 interface Props {
   messages: Message[];
@@ -21,12 +20,18 @@ const ScrollableChat = ({ messages }: Props) => {
 
   return (
     <ScrollableFeed>
-      {messages.length
-        ? messages.map((v, i) => (
+      {messages.length &&
+        messages.map((v, i) => {
+          const isSameSenderToUser = isSameSender(messages, v, i, user._id);
+          const isChatLastMessage = isLastMessage(messages, i, user._id);
+          return (
             <div style={{ display: "flex" }} key={v._id}>
-              {(isSameSender(messages, v, i, user._id) ||
-                isLastMessage(messages, i, user._id)) && (
-                <Tooltip label={v.sender.name} placement="bottom" hasArrow>
+              {(isSameSenderToUser || isChatLastMessage) && (
+                <Tooltip
+                  label={v.sender.name}
+                  placement="bottom-start"
+                  hasArrow
+                >
                   <Avatar
                     mt="7px"
                     mr={1}
@@ -52,8 +57,8 @@ const ScrollableChat = ({ messages }: Props) => {
                 {v.content}
               </span>
             </div>
-          ))
-        : null}
+          );
+        })}
     </ScrollableFeed>
   );
 };
