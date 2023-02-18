@@ -16,11 +16,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": "./",
-    "rootDirs": ["./", "../shared"],
+    "rootDir": "./",
+    // "rootDirs": ["./", "../shared"],
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@constants/*": ["./src/constants/*"]
     }
   },
-  "include": ["src", "../shared/types/types.ts", "../shared/types/types.ts"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

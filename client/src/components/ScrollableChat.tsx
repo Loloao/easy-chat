@@ -1,5 +1,5 @@
 import React from "react";
-import { Message } from "@shared/types";
+import { Message } from "../server/src/constants/types";
 import ScrollableFeed from "react-scrollable-feed";
 import {
   isLastMessage,

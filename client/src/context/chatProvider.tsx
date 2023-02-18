@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useHistory } from "react-router-dom";
 import { ChatContextObj } from "./types";
-import { User, Chat, Message } from "@shared/types";
+import { User, Chat, Message } from "@constants/types";
 import { getLocalStorageUserInfo } from "../tools";
 
 export const defaultUser: User = {

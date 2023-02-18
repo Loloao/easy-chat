@@ -9,8 +9,8 @@ import chatRouters from "./routes/chatRoutes";
 import messageRouters from "./routes/messageRoutes";
 import connectDB from "./config/db";
 import { notFound, errorHandler } from "./middleware/errorMiddleware";
-import { SOCKET_EVENT } from "../shared/enums";
-import { Message, User } from "../shared/types";
+import { SOCKET_EVENT } from "./constants/enums";
+import { Message, User } from "./constants/types";
 
 // 加载 .env 文件
 dotEnv.config();
@@ -28,7 +28,7 @@ app.use("/api/message", messageRouters);
 // ------------- Deploymeng ------------------
 const __dirname1 = path.resolve();
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/client/build")));
+  app.use(express.static(path.join(__dirname1, "/client/dist")));
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"));
   });

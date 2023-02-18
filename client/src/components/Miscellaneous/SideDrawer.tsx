@@ -27,7 +27,7 @@ import axios from "axios";
 import { ChatState } from "../../context/chatProvider";
 import ProfileModal from "./ProfileModal";
 import ChatLoading from "../ChatLoading";
-import { User } from "@shared/types";
+import { User } from "@constants/types";
 import UserListItem from "../UserAvatar/UserListItem";
 import { getErrorRequestOptions } from "../Toasts";
 import { getSender, setTokenFetch } from "../../tools";

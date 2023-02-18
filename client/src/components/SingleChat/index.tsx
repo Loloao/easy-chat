@@ -24,11 +24,11 @@ import ProfileModal from "../Miscellaneous/ProfileModal";
 import { defaultChat } from "../../context/chatProvider";
 import { getSender, getSenderFull, setTokenFetch } from "../../tools";
 import UpdateGroupChatModal from "../Miscellaneous/UpdateGroupChatModal";
-import { Chat, Message } from "@shared/types";
-import { SERVER_ADDRESS } from "../../constants";
+import { Chat, Message } from "@constants/types";
+import { SERVER_ADDRESS } from "@constants/index";
 import { getErrorRequestOptions } from "../Toasts";
 import ScrollableChat from "../ScrollableChat";
-import { SOCKET_EVENT } from "@shared/enums";
+import { SOCKET_EVENT } from "@constants/enums";
 import "./styles.css";
 
 interface Props {

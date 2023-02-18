@@ -16,7 +16,7 @@ import {
 import React, { useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import { setTokenFetch, debounce } from "../../tools";
-import { User } from "@shared/types";
+import { User } from "../server/src/constants/types";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import UserListItem from "../UserAvatar/UserListItem";
 import { getErrorRequestOptions } from "../Toasts";

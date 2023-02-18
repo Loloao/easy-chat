@@ -6,7 +6,10 @@ import path from "path";
 export default defineConfig({
   resolve: {
     alias: [
-      { find: "@shared", replacement: path.resolve(__dirname, "../shared") },
+      {
+        find: "@constants",
+        replacement: path.resolve(__dirname, "src/constants"),
+      },
     ],
   },
   plugins: [react()],

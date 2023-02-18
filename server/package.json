@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "ts-node ./index.ts",
+    "serve": "ts-node ./src/index.ts",
     "start": "nodemon --ext ts,js,json --exec \"npm run serve\""
   },
   "imports": {

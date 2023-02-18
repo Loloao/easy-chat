@@ -1,4 +1,4 @@
-import { User, Chat, Message } from "@shared/types";
+import { User, Chat, Message } from "@constants/types";
 import React from "react";
 
 export interface ChatContextObj {
