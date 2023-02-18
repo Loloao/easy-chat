@@ -8,6 +8,9 @@
     "serve": "ts-node ./index.ts",
     "start": "nodemon --ext ts,js,json --exec \"npm run serve\""
   },
+  "imports": {
+    "@shared/*": "../shared/*"
+  },
   "author": "Loloao",
   "license": "ISC",
   "dependencies": {
