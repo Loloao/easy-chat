@@ -107,7 +107,7 @@ const Login = () => {
         登录
       </Button>
 
-      <Button
+      {/* <Button
         colorScheme="red"
         width="100%"
         style={{ margin: 15 }}
@@ -118,7 +118,7 @@ const Login = () => {
         }}
       >
         以游客身份登录
-      </Button>
+      </Button> */}
     </VStack>
   );
 };
