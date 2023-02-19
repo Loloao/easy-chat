@@ -11,6 +11,10 @@
 ## Setup
 
 * 新建 .env 文件，配置以下内容
+  + PORT：访问的端口号
+  + MONGO_URI: MongoDB 数据库连接地址
+  + JWT_TOKEN: 用于设置 JWT 的秘钥
+  + CLIENT_ADDRESS: 客户端地址
 
 * 安装依赖`npm install`
 
