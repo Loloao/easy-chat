@@ -1,6 +1,6 @@
 import { Box, Avatar, Text } from "@chakra-ui/react";
 import { ChatState } from "../../context/chatProvider";
-import { User } from "../server/src/constants/types";
+import { User } from "@constants/types";
 
 interface Props {
   user: User;

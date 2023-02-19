@@ -1,4 +1,4 @@
-import { Message, User } from "../server/src/constants/types";
+import { Message, User } from "@constants/types";
 
 export const getLocalStorageUserInfo = () => {
   const userInfoStr = localStorage.getItem("userInfo");

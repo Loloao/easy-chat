@@ -7,7 +7,7 @@ import {
   setTokenFetch,
   getSender,
 } from "../tools/index";
-import { User } from "../server/src/constants/types";
+import { User } from "@constants/types";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./Miscellaneous/GroupChatModal";
 import { getErrorRequestOptions } from "./Toasts";

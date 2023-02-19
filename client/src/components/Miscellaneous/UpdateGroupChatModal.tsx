@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 import { ChatState, defaultChat } from "../../context/chatProvider";
-import { User } from "../server/src/constants/types";
+import { User } from "@constants/types";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import { debounce, setTokenFetch } from "../../tools";
 import UserListItem from "../UserAvatar/UserListItem";
