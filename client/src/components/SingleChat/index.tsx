@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
   Box,
   FormControl,
@@ -51,6 +51,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
+  const [sendMessageLoading, setSendMessageLoading] = useState(false);
 
   const { user, selectedChat, setSelectedChat, notification, setNotification } =
     ChatState();
@@ -105,11 +106,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
     }
   };
 
-  const sendMessage: KeyboardEventHandler<HTMLDivElement> = async (e) => {
-    if (e.key === "Enter" && newMessage) {
+  const keydownSendMessage: KeyboardEventHandler<HTMLDivElement> = async (
+    e
+  ) => {
+    if (e.key === "Enter") sendMessage();
+  };
+
+  const sendMessage = async () => {
+    if (newMessage) {
       try {
         setNewMessage("");
-
+        setSendMessageLoading(true);
         const { data } = await setTokenFetch(user.token).post("/api/message", {
           content: newMessage,
           chatId: selectedChat._id,
@@ -118,6 +125,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
         setMessages([...messages, data]);
       } catch (error) {
         toast(getErrorRequestOptions("发送聊天信息失败!"));
+      } finally {
+        setSendMessageLoading(false);
       }
     }
   };
@@ -193,9 +202,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
             )}
 
             <FormControl
-              onKeyDown={sendMessage}
+              onKeyDown={keydownSendMessage}
               id="first-name"
               isRequired
+              display="flex"
+              justifyContent="space-between"
               mt={3}
             >
               {/* {istyping ? (
@@ -213,9 +224,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }: Props) => {
               <Input
                 variant="filled"
                 bg="#E0E0E0"
+                mr="2"
                 placeholder="Enter a message.."
                 value={newMessage}
                 onChange={typingHandler}
+              />
+              <IconButton
+                aria-label=""
+                isLoading={sendMessageLoading}
+                icon={<ArrowForwardIcon />}
+                onClick={() => sendMessage()}
               />
             </FormControl>
           </Box>

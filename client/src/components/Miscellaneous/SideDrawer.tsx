@@ -164,7 +164,7 @@ const SideDrawer = () => {
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>
-                {/* <MenuItem>我的</MenuItem> */}
+                <MenuItem>我的信息</MenuItem>
               </ProfileModal>
               <MenuItem onClick={logoutHandler}>注销</MenuItem>
             </MenuList>
