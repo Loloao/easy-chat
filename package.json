@@ -5,9 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "ts-node ./src/index.ts",
+    "serve": "ts-node ./src/index.ts && tsc -w",
     "dev": "nodemon --ext ts,js,json --exec \"npm run serve\"",
-    "start": "node ./srcPrd/index.js"
+    "start": "tsc && node ./srcPrd/index.js"
   },
   "author": "Loloao",
   "license": "ISC",
