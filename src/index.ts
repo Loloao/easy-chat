@@ -25,7 +25,7 @@ app.use("/api/user", userRouters);
 app.use("/api/chat", chatRouters);
 app.use("/api/message", messageRouters);
 
-// ------------- Deploymeng ------------------
+// ------------- Deployment ------------------
 const __dirname1 = path.resolve();
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname1, "public")));
@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is Running Successfully???");
   });
 }
-// ------------- Deploymeng ------------------
+// ------------- Deployment ------------------
 
 app.use(notFound);
 app.use(errorHandler);
@@ -74,16 +74,19 @@ io.on(CONNECTION, (socket) => {
     console.log("User Joined Room: " + room);
   });
 
-  socket.on(NEW_MESSAGE, (newMessageRecieved) => {
+  socket.on(NEW_MESSAGE, (newMessageRecieved: Message) => {
     const chat = newMessageRecieved.chat;
+    console.log("user send newMessage", newMessageRecieved.content);
 
     if (!chat.users) return console.log("users not found");
 
-    chat.users.forEach((v: User) => {
-      if (v._id === newMessageRecieved.sender._id) return;
+    socket.to(chat._id).emit(MESSAGE_RECEIVED, newMessageRecieved);
 
-      socket.in(v._id).emit(MESSAGE_RECEIVED, newMessageRecieved);
-    });
+    // chat.users.forEach((v: User) => {
+    //   if (v._id === newMessageRecieved.sender._id) return;
+    //   console.log(v, "vvv");
+    //   socket.in(v._id).emit(MESSAGE_RECEIVED, newMessageRecieved);
+    // });
   });
 
   socket.off(SET_UP, (userData) => {

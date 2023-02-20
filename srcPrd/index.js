@@ -22,7 +22,7 @@ app.use(express_1.default.json());
 app.use("/api/user", userRoutes_1.default);
 app.use("/api/chat", chatRoutes_1.default);
 app.use("/api/message", messageRoutes_1.default);
-// ------------- Deploymeng ------------------
+// ------------- Deployment ------------------
 const __dirname1 = path_1.default.resolve();
 if (process.env.NODE_ENV === "production") {
     app.use(express_1.default.static(path_1.default.join(__dirname1, "public")));
@@ -35,7 +35,7 @@ else {
         res.send("API is Running Successfully???");
     });
 }
-// ------------- Deploymeng ------------------
+// ------------- Deployment ------------------
 app.use(errorMiddleware_1.notFound);
 app.use(errorMiddleware_1.errorHandler);
 const port = process.env.PORT || 8001;
@@ -59,13 +59,15 @@ io.on(CONNECTION, (socket) => {
     });
     socket.on(NEW_MESSAGE, (newMessageRecieved) => {
         const chat = newMessageRecieved.chat;
+        console.log("user send newMessage", newMessageRecieved.content);
         if (!chat.users)
             return console.log("users not found");
-        chat.users.forEach((v) => {
-            if (v._id === newMessageRecieved.sender._id)
-                return;
-            socket.in(v._id).emit(MESSAGE_RECEIVED, newMessageRecieved);
-        });
+        socket.to(chat._id).emit(MESSAGE_RECEIVED, newMessageRecieved);
+        // chat.users.forEach((v: User) => {
+        //   if (v._id === newMessageRecieved.sender._id) return;
+        //   console.log(v, "vvv");
+        //   socket.in(v._id).emit(MESSAGE_RECEIVED, newMessageRecieved);
+        // });
     });
     socket.off(SET_UP, (userData) => {
         socket.leave(userData._id);
